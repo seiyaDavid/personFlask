@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Persona Chat AI</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #5C392B 0%, #7A4D3A 100%);
+            /* Lighter brown gradient */
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            font-size: 14px;
+        }
+
+        .main-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .cards-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .personas-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 35px;
+        }
+
+        .persona-card {
+            background: #e2e8f0;
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 25px;
+            height: fit-content;
+        }
+
+        .profile-section {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 12px;
+        }
+
+        .chat-section {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 12px;
+        }
+
+        .persona-card h2,
+        .chat-card h2 {
+            color: #2d3748;
+            margin-top: 0;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 10px;
+        }
+
+        .persona-info {
+            margin-bottom: 8px;
+            font-size: 1em;
+        }
+
+        .persona-info p {
+            margin: 8px 0;
+            display: grid;
+            grid-template-columns: 100px 1fr;
+            align-items: center;
+        }
+
+        .persona-info label {
+            font-weight: 600;
+            color: #2d3748;
+            font-size: 1.05em;
+        }
+
+        .chat-messages {
+            height: 300px;
+            overflow-y: auto;
+            padding: 10px;
+            background: white;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            min-width: 400px;
+        }
+
+        .message {
+            margin: 8px 0;
+            padding: 8px;
+            border-radius: 6px;
+            max-width: 80%;
+            font-size: 0.9em;
+        }
+
+        .user-message {
+            background: #667eea;
+            color: white;
+            margin-left: auto;
+        }
+
+        .ai-message {
+            background: #e2e8f0;
+            color: #2d3748;
+        }
+
+        .input-container {
+            display: flex;
+            gap: 10px;
+            padding: 10px;
+            background: white;
+            border-radius: 8px;
+        }
+
+        input[type="text"] {
+            flex: 1;
+            padding: 8px;
+            border: 1px solid #e2e8f0;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        button {
+            padding: 8px 16px;
+            background: #5C392B;
+            /* Lighter brown */
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s;
+            font-size: 14px;
+        }
+
+        button:hover {
+            background: #7A4D3A;
+            /* Even lighter brown */
+        }
+
+        .chat-input-container {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            max-width: 1600px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .header-container {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            gap: 30px;
+            margin-bottom: 20px;
+            padding-left: 20px;
+        }
+
+        .bank-logo {
+            height: 80px;
+            width: auto;
+        }
+
+        h1 {
+            margin: 0;
+            text-align: left;
+            font-size: 1.8em;
+            flex-grow: 1;
+        }
+
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #2d3748;
+            margin-top: 0;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .profile-header i {
+            font-size: 1.3em;
+            color: #5C392B;
+            /* Lighter brown */
+        }
+
+        h2 {
+            font-size: 1.2em;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="main-card">
+        <div class="header-container">
+            <img src="{{ url_for('static', filename='images/jpmorgan-logo.png') }}" alt="JPMorgan Chase Logo"
+                class="bank-logo">
+            <h1>Persona Chat AI</h1>
+        </div>
+        <div class="cards-container">
+            <div class="personas-row">
+                <div class="persona-card">
+                    <div class="profile-section">
+                        <h2 class="profile-header">
+                            <i class="fas fa-university"></i>
+                            Retail Bank Client
+                        </h2>
+                        <div class="persona-info">
+                            <p><label>Name:</label> {{ client_data.retail.name }}</p>
+                            <p><label>Age:</label> {{ client_data.retail.age }}</p>
+                            <p><label>Gender:</label> {{ client_data.retail.gender }}</p>
+                            <p><label>Job:</label> {{ client_data.retail.job }}</p>
+                            <p><label>Wealth:</label> {{ client_data.retail.wealth }}</p>
+                            <p><label>Nationality:</label> {{ client_data.retail.nationality }}</p>
+                        </div>
+                    </div>
+                    <div class="chat-section">
+                        <h2 class="profile-header">
+                            <i class="fas fa-comments"></i>
+                            Chat with Retail Client
+                        </h2>
+                        <div class="chat-messages" id="chatMessages1">
+                            <!-- Messages will be dynamically added here -->
+                        </div>
+                    </div>
+                </div>
+                <div class="persona-card">
+                    <div class="profile-section">
+                        <h2 class="profile-header">
+                            <i class="fas fa-gem"></i>
+                            Private Bank Client
+                        </h2>
+                        <div class="persona-info">
+                            <p><label>Name:</label> {{ client_data.private.name }}</p>
+                            <p><label>Age:</label> {{ client_data.private.age }}</p>
+                            <p><label>Gender:</label> {{ client_data.private.gender }}</p>
+                            <p><label>Job:</label> {{ client_data.private.job }}</p>
+                            <p><label>Wealth:</label> {{ client_data.private.wealth }}</p>
+                            <p><label>Nationality:</label> {{ client_data.private.nationality }}</p>
+                        </div>
+                    </div>
+                    <div class="chat-section">
+                        <h2 class="profile-header">
+                            <i class="fas fa-comments"></i>
+                            Chat with Private Client
+                        </h2>
+                        <div class="chat-messages" id="chatMessages2">
+                            <!-- Messages will be dynamically added here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="chat-input-container">
+        <div class="input-container">
+            <input type="text" id="userInput" placeholder="Type your message...">
+            <button onclick="sendMessage()">Send</button>
+        </div>
+    </div>
+
+    <script>
+        async function sendMessage() {
+            const input = document.getElementById('userInput');
+            const message = input.value.trim();
+
+            if (message) {
+                // Add user message to both chat windows
+                const chatMessages1 = document.getElementById('chatMessages1');
+                const chatMessages2 = document.getElementById('chatMessages2');
+
+                // Add user messages
+                const userDiv1 = document.createElement('div');
+                const userDiv2 = document.createElement('div');
+                userDiv1.className = userDiv2.className = 'message user-message';
+                userDiv1.textContent = userDiv2.textContent = message;
+                chatMessages1.appendChild(userDiv1);
+                chatMessages2.appendChild(userDiv2);
+
+                // Show loading indicators
+                const loadingDiv1 = document.createElement('div');
+                const loadingDiv2 = document.createElement('div');
+                loadingDiv1.className = loadingDiv2.className = 'message ai-message';
+                loadingDiv1.textContent = loadingDiv2.textContent = 'Typing...';
+                chatMessages1.appendChild(loadingDiv1);
+                chatMessages2.appendChild(loadingDiv2);
+
+                try {
+                    // Send message to backend
+                    const response = await fetch('/chat', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            message: message
+                        })
+                    });
+
+                    const data = await response.json();
+
+                    // Remove loading indicators
+                    chatMessages1.removeChild(loadingDiv1);
+                    chatMessages2.removeChild(loadingDiv2);
+
+                    // Add AI responses
+                    const aiDiv1 = document.createElement('div');
+                    const aiDiv2 = document.createElement('div');
+                    aiDiv1.className = aiDiv2.className = 'message ai-message';
+                    aiDiv1.textContent = data.retail_response;
+                    aiDiv2.textContent = data.private_response;
+                    chatMessages1.appendChild(aiDiv1);
+                    chatMessages2.appendChild(aiDiv2);
+                } catch (error) {
+                    console.error('Error:', error);
+                    loadingDiv1.textContent = loadingDiv2.textContent = 'Error sending message. Please try again.';
+                }
+
+                // Clear input
+                input.value = '';
+
+                // Auto scroll both chat windows
+                chatMessages1.scrollTop = chatMessages1.scrollHeight;
+                chatMessages2.scrollTop = chatMessages2.scrollHeight;
+            }
+        }
+
+        // Allow sending message with Enter key
+        document.getElementById('userInput').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+
+        // Remove the click handlers for chat sections since we're handling both simultaneously
+        document.querySelectorAll('.chat-section').forEach(section => {
+            section.style.outline = 'none';
+        });
+    </script>
+</body>
+
+</html>
